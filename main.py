@@ -1,9 +1,14 @@
+#import of libraries
 import pygame , sys, math
 
 
+#rotate function
+def rotate2d(pos,rad): 
+  x,y=pos; s,c = math.sin(rad),math.cos(rad)
+  return x*c-y*s, y*c+x*s
 
-def rotate2d(pos,rad): x,y=pos; s,c = math.sin(rad),math.cos(rad); return x*c-y*s, y*c+x*s
 
+#Camera class, defining the view and positionning
 class Cam:
     def __init__(self, pos=(0, 0, 0), rot=(0, 0)):
         self.pos = list(pos)
@@ -22,11 +27,11 @@ class Cam:
         x,y = s*math.sin(self.rot[1]), s*math.cos(self.rot[1])
 
 
-        if key[pygame.K_s]: self.pos[0] += x; self.pos[2] += y
-        if key[pygame.K_w]: self.pos[0] -= x; self.pos[2] -= y
+        if key[pygame.K_w]: self.pos[0] += x; self.pos[2] += y
+        if key[pygame.K_s]: self.pos[0] -= x; self.pos[2] -= y
 
-        if key[pygame.K_d]: self.pos[0] -= y; self.pos[2] += x
-        if key[pygame.K_a]: self.pos[0] += y; self.pos[2] -= x
+        if key[pygame.K_a]: self.pos[0] -= y; self.pos[2] += x
+        if key[pygame.K_d]: self.pos[0] += y; self.pos[2] -= x
 
 
 
@@ -80,7 +85,8 @@ while True:
 
     face_list = []; face_color = []; depth =[]
 
-    for face in faces:
+    for f in range(len(faces)):
+      face = faces[f]
       on_screen = False
 
       for i in face:
@@ -90,11 +96,11 @@ while True:
 
         coords = [screen_coords[i] for i in face]
         face_list += [coords]
-        face_color += [colors[faces.index(face)]]
-        depth += [sum(sum(j[i] for j in vert_list)**2 for i in range(3))]
+        face_color += [colors[f]]
+        depth += [sum(sum(vert_list[j][i] for j in face)**2 for i in range(3))]
 
-    order = sorted(range(len(face_list)), key = lambda i: depth[i], reverse= 0)
-    for i in range(len(face_list)):
+    order = sorted(range(len(face_list)), key = lambda i: depth[i], reverse= i)
+    for i in order:
       pygame.draw.polygon(screen,face_color[i], face_list[i] )
 
 
